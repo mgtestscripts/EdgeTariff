@@ -1,0 +1,16 @@
+<?php
+$_source = $block->getSource();
+$priceCurrency = \Magento\Framework\App\ObjectManager::getInstance()
+    ->get(\Magento\Framework\Pricing\PriceCurrencyInterface::class);
+?>
+
+<tr class="tax">
+    <th colspan="4" class="mark" scope="row">
+        <?= $escaper->escapeHtml(__('Tax (Est. Duty + GST/VAT)')) ?>
+    </th>
+    <td class="amount" data-th="Tax (Est. Duty + GST/VAT)">
+        <span class="price">
+            <?= $escaper->escapeHtml($priceCurrency->format($_source->getTaxAmount(), false)) ?>
+        </span>
+    </td>
+</tr>

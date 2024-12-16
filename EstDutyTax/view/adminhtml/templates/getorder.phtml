@@ -1,0 +1,56 @@
+<?php
+use Laminas\Uri\UriFactory;
+
+// Get the Escaper instance
+/** @var \Magento\Framework\Escaper $escaper */
+$escaper = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class);
+
+// Get the Data helper instance
+/** @var \EdgeCTP\EstDutyTax\Helper\Data $helper */
+$helper = \Magento\Framework\App\ObjectManager::getInstance()->get(\EdgeTariff\EstDutyTax\Helper\Data::class);
+
+/** @var \Magento\Sales\Model\Order $order */
+$order = $block->getOrder();
+
+// Retrieve and escape data
+$orderId = $escaper->escapeHtmlAttr($block->getData('order_id'));
+$userId = $escaper->escapeHtmlAttr($block->getData('user_id')); // Corrected to 'user_id'
+$firstName = $escaper->escapeUrl($order->getCustomerFirstname());
+$lastName = $escaper->escapeUrl($order->getCustomerLastname());
+$userName = $escaper->escapeUrl($firstName . ' ' . $lastName);
+$userAddress = $escaper->escapeUrl($order->getBillingAddress()->getStreet()[0] ?? ''); // Default to empty if not set
+$userCity = $escaper->escapeUrl($order->getBillingAddress()->getCity());
+$userCountry = $escaper->escapeUrl($order->getBillingAddress()->getCountryId());
+
+// Get the base URL of the store using the helper method
+$baseUrl = $escaper->escapeUrl($helper->getStoreBaseUrl());
+$uri = UriFactory::factory($baseUrl);
+$baseUrl = $uri->getScheme() . '://' . $uri->getHost();
+
+// Escape the WTT_BASE_URL
+$wttUrl = $escaper->escapeUrl($helper->getWttBaseUrl());
+
+// Encode values for URL
+$encodedSiteUrl = urlencode($baseUrl);
+$encodedUserName = urlencode($userName);
+$encodedFirstName = urlencode($firstName);
+$encodedLastName = urlencode($lastName);
+$encodedUserAddress = urlencode($userAddress);
+$encodedUserCity = urlencode($userCity);
+$encodedUserCountry = urlencode($userCountry);
+
+// Build the iframe src attribute
+$iframeSrc = $wttUrl . "/Magento/RPS.aspx?action=RequestRPS&code=0907a61c0c8d55e99db179b68161bc00" .
+    "&order_id=" . $orderId .
+    "&SourceStoreName=" . $encodedSiteUrl .
+    "&user_id=" . $userId .
+    "&user_name=" . $encodedUserName .
+    "&first_name=" . $encodedFirstName .
+    "&last_name=" . $encodedLastName .
+    "&user_address=" . $encodedUserAddress .
+    "&user_city=" . $encodedUserCity .
+    "&user_country=" . $encodedUserCountry;
+?>
+
+<iframe id='if1' width='100%' height='1000px' style='visibility:visible' 
+src='<?= $escaper->escapeHtmlAttr($iframeSrc); ?>'></iframe>

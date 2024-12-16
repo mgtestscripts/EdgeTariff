@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <!-- For custom buttons -->
+    <argument name="data" xsi:type="array">
+        <item name="buttons" xsi:type="array">
+            <item name="Get RPS" xsi:type="string">EdgeTariff\EstDutyTax\Block\Adminhtml\Product\Edit\Button\GetProduct</item>
+            <item name="Show RPS" xsi:type="string">EdgeTariff\EstDutyTax\Block\Adminhtml\Product\Edit\Button\ShowProduct</item>
+        </item>
+    </argument>
+</form>

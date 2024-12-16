@@ -1,0 +1,26 @@
+<?php
+use Laminas\Uri\UriFactory;
+
+// Get the Escaper instance
+/** @var \Magento\Framework\Escaper $escaper */
+$escaper = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class);
+
+// Get the Data helper instance
+/** @var \EdgeCTP\EstDutyTax\Helper\Data $helper */
+$helper = \Magento\Framework\App\ObjectManager::getInstance()->get(\EdgeTariff\EstDutyTax\Helper\Data::class);
+
+// Get the base URL of the store using the helper method
+$baseUrl = $escaper->escapeUrl($helper->getStoreBaseUrl());
+// Use Laminas\Uri to parse the URL
+$uri = UriFactory::factory($baseUrl);
+
+$baseUrl = $uri->getScheme() . '://' . $uri->getHost();
+
+// Escape the WTT_BASE_URL and base URL using the Escaper
+$wttUrl = $escaper->escapeUrl($helper->getWttBaseUrl());
+?>
+
+<iframe id='if1' width='100%' height='1000px' style='visibility:visible'
+src='<?= $escaper->escapeUrl($wttUrl); ?>/Magento/RPS.aspx?action=ShowRPS
+&code=0907a61c0c8d55e99db179b68161bc00&SourceStoreName=<?= $escaper->escapeHtmlAttr($baseUrl); ?>'
+Access-Control-Allow-Origin='*'></iframe>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/menu.xsd">
+    <menu>
+        <add id="EdgeTariff_EstDutyTax::edge_ctp" title="EdgeTariff" module="EdgeTariff_EstDutyTax" sortOrder="10" resource="EdgeTariff_EstDutyTax::edge_ctp"/>
+        <add id="EdgeTariff_EstDutyTax::connection" title="Connection" module="EdgeTariff_EstDutyTax" sortOrder="10" parent="EdgeTariff_EstDutyTax::edge_ctp" action="EstDutyTax/connection/index" resource="EdgeTariff_EstDutyTax::connection"/>
+        <add id="EdgeTariff_EstDutyTax::edgedashboard" title="Dashboard" module="EdgeTariff_EstDutyTax" sortOrder="20" parent="EdgeTariff_EstDutyTax::edge_ctp" action="EstDutyTax/edgedashboard/index" resource="EdgeTariff_EstDutyTax::edgedashboard"/>
+        <add id="EdgeTariff_EstDutyTax::rpsedt" title="RPS + EDT" module="EdgeTariff_EstDutyTax" sortOrder="30" parent="EdgeTariff_EstDutyTax::edge_ctp" action="EstDutyTax/rpsedt/index" resource="EdgeTariff_EstDutyTax::rpsedt"/>
+        <add id="EdgeTariff_EstDutyTax::ppc" title="PPC" module="EdgeTariff_EstDutyTax" sortOrder="40" parent="EdgeTariff_EstDutyTax::edge_ctp" action="EstDutyTax/ppc/index" resource="EdgeTariff_EstDutyTax::ppc"/>
+    </menu>
+</config>

@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/api.xsd">
+    <service name="EdgeTariff\EstDutyTax\Api\EdgeCredentialsInterface" di="Magento\Framework\Api\ExtensibleDataInterface">
+        <interface class="EdgeTariff\EstDutyTax\Api\EdgeCredentialsInterface"/>
+        <resource ref="Magento_Backend::admin"/>
+    </service>
+</config>
+ 

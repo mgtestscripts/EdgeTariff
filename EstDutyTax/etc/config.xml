@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <EdgeTariffEstDutyTax>
+           <!-- Default Disable  -->
+                <active>0</active>   
+                <sallowspecific>0</sallowspecific>
+                <!-- Deafult Prize -->
+                <price>10</price>
+                <!-- Get Shipping Mehtids  -->
+                <model>EdgeTariff\EstDutyTax\Model\Carrier\CustomShipping</model>
+                <!-- Payment Type Fixed -->
+                <name>EdgeTariff</name>
+                <title></title>
+                <specificerrmsg>Welcome</specificerrmsg>
+            </EdgeTariffEstDutyTax>
+        </carriers>
+    </default>
+</config>

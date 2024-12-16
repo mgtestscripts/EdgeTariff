@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="EdgeTariff\EstDutyTax\Controller\Index\GetRates">
+        <arguments>
+            <argument name="customShipping" xsi:type="object">EdgeTariff\EstDutyTax\Model\Carrier\CustomShipping</argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,21 @@
+<?php
+$_source = $block->getSource();
+$_order = $block->getOrder();
+$_fullInfo = $block->getFullTaxInfo();
+$taxHelper = $block->getTaxHelper();  // Ensure this helper is properly retrieved
+?>
+
+<?php if ($block->displayFullSummary() && $_fullInfo): ?>
+<tr class="summary-total">
+<?php else: ?>
+<tr>
+<?php endif; ?>
+    <td class="label">
+        <div class="summary-collapse" tabindex="0">
+            <?= $escaper->escapeHtml(__('Tax (Est. Duty + GST/VAT)')) ?>
+        </div>
+    </td>
+    <td>
+        <?= /* @noEscape */ $block->displayAmount($_source->getTaxAmount(), $_source->getBaseTaxAmount()) ?>
+    </td>
+</tr>

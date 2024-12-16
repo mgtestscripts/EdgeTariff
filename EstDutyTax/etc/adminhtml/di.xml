@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Plugin for Product Edit Button -->
+    <type name="Magento\Catalog\Block\Adminhtml\Product\Edit\Button\Generic">
+        <plugin name="edgetariff_EstDutyTax_getproduct_button"
+                type="EdgeTariff\EstDutyTax\Block\Adminhtml\Product\Edit\Button\GetProduct"
+                sortOrder="1"
+                disabled="false"/>
+        <plugin name="edgetariff_EstDutyTax_showproduct_button"
+                type="EdgeTariff\EstDutyTax\Block\Adminhtml\Product\Edit\Button\ShowProduct"
+                sortOrder="2"
+                disabled="false"/>
+    </type>
+    <!-- Plugin for Sales Order View -->
+    <type name="Magento\Backend\Block\Widget\Button\Toolbar">
+        <plugin name="edgetariff_EstDutyTax_pluginBefore" type="EdgeTariff\EstDutyTax\Plugin\PluginBefore" />
+    </type>
+</config>

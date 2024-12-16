@@ -1,0 +1,30 @@
+<?php
+// Get the Escaper instance
+/** @var \Magento\Framework\Escaper $escaper */
+$escaper = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class);
+
+// Get the Data helper instance
+/** @var \EdgeCTP\EstDutyTax\Helper\Data $helper */
+$helper = \Magento\Framework\App\ObjectManager::getInstance()->get(\EdgeTariff\EstDutyTax\Helper\Data::class);
+
+// Get dynamic values
+$action = "ShowPPC";
+$productId = $escaper->escapeHtmlAttr($block->getProductId());
+
+// Get the base URL of the store using the helper method
+$baseUrl = rtrim($escaper->escapeUrl($helper->getStoreBaseUrl()), '/');
+//$parsedUrl = parse_url($baseUrl);
+//$baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+
+// Escape the WTT_BASE_URL and base URL using the Escaper
+$wttUrl = $escaper->escapeUrl($helper->getWttBaseUrl());
+$shopUrl = $baseUrl;
+
+// Build the iframe src attribute
+$iframeSrc = $wttUrl . "/Magento/RPS.aspx?action=" .
+$escaper->escapeHtmlAttr($action) . "&ProductId=" .
+$productId . "&SourceStoreName=" . $shopUrl;
+?>
+
+<iframe id='if1' width='100%' height='1000px' style='visibility:visible' 
+src='<?= $escaper->escapeHtmlAttr($iframeSrc); ?>'></iframe>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="EdgeTariff_EstDutyTax::css/custom.css"/>
+    </head>
+    <body>
+        <referenceBlock name="checkout.root">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="checkout" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="steps" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="shipping-step" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+
+                                                <!-- Place the custom button here -->
+                                                <item name="custom_button_outside" xsi:type="array">
+                                                    <item name="component" xsi:type="string">EdgeTariff_EstDutyTax/js/form/Request</item>
+                                                    <item name="config" xsi:type="array">
+                                                        <item name="template" xsi:type="string">EdgeTariff_EstDutyTax/form/buttonmain</item>
+                                                    </item>
+                                                </item>
+
+                                                <!-- Existing components -->
+                                                <item name="step-config" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="shipping-rates-validation" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="EdgeTariffEstDutyTax-rates-validation" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">EdgeTariff_EstDutyTax/js/view/shipping-rates-validation</item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+
+                                                <!-- Shipping Address Component -->
+                                                <item name="shippingAddress" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <item name="shipping-address-fieldset" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                                <!-- The original button inside the address fields -->
+                                                                <!-- This can be removed if no longer needed -->
+                                                                <item name="custom_button" xsi:type="array">
+                                                                    <item name="component" xsi:type="string">EdgeTariff_EstDutyTax/js/form/Request</item>
+                                                                    <item name="config" xsi:type="array">
+                                                                        <item name="template" xsi:type="string">EdgeTariff_EstDutyTax/form/button</item>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

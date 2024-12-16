@@ -1,0 +1,32 @@
+{
+    "name": "edgetariff/estdutytax",
+    "description": "EdgeTariff Estimate Duty & Taxies for magento 2 Extension",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "require": {
+        "php": "^7.4 || ^8.1",
+        "magento/framework": "^103.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "EdgeTariff\\EstDutyTax\\": ""
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mgtestscripts/EdgeTariff.git"
+        }
+    ],
+    "extra": {
+        "map": [
+            [
+                "*",
+                "EdgeTariff/EstDutyTax"
+            ]
+        ]
+    }
+}

@@ -1,0 +1,23 @@
+<?php
+// Get the Escaper instance
+/** @var \Magento\Framework\Escaper $escaper */
+$escaper = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class);
+
+// Get the Data helper instance
+/** @var \EdgeCTP\EstDutyTax\Helper\Data $helper */
+$helper = \Magento\Framework\App\ObjectManager::getInstance()->get(\EdgeTariff\EstDutyTax\Helper\Data::class);
+
+// Get the base URL of the store using the helper method
+$baseUrl = $escaper->escapeUrl($helper->getStoreBaseUrl());
+//$parsedUrl = parse_url($baseUrl);
+//$baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
+
+// Escape the WTT_BASE_URL and base URL using the Escaper
+$wttUrl = $escaper->escapeUrl($helper->getWttBaseUrl());
+$shopUrl = $baseUrl;
+?>
+
+<iframe id="if1" width="100%" style="visibility:visible;height:90vh;"
+        src="<?= $escaper->escapeHtmlAttr($wttUrl); ?>
+/admin/settings/Magento/MagentoConnectToEdge.aspx?shopurl=<?=
+$escaper->escapeHtmlAttr($shopUrl); ?>"></iframe>
