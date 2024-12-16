@@ -17,6 +17,9 @@
             "name": "MorganGoodwin Ltd"
         }
     ],
+    "license": [
+        "GPL-3.0-or-later"
+    ],
     "support": {
         "documentation": "https://edgetariff.com/wp-content/uploads/2024/12/EdgeTariff_Magento2_Extension_Tech_Guide_RoughCountry.pdf"
     },
