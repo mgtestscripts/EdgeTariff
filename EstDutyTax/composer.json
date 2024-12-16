@@ -7,6 +7,19 @@
         "php": "^7.4 || ^8.1",
         "magento/framework": "^103.0"
     },
+    "authors": [
+        {
+            "name": "EdgeCTP",
+            "email": "support@morgangoodwin.com",
+            "homepage": "https://edgectp.com/"
+        },
+        {
+            "name": "MorganGoodwin Ltd"
+        }
+    ],
+    "support": {
+        "documentation": "https://edgetariff.com/wp-content/uploads/2024/12/EdgeTariff_Magento2_Extension_Tech_Guide_RoughCountry.pdf"
+    },
     "autoload": {
         "files": [
             "registration.php"
