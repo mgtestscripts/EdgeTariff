@@ -98,6 +98,7 @@ class OrderAddresses implements ObserverInterface
             $quote = $observer->getQuote();
             $order = $observer->getOrder();
             $description = $order->getShippingDescription();
+            
 
             if (strpos($description, 'Delivery Date') !== false) {
                 $order->setShippingDescription($description . ", Shipping Fee = ");
@@ -109,35 +110,70 @@ class OrderAddresses implements ObserverInterface
 
                 // Define a regex to match the shipping line and extract the currency symbol
                 preg_match('/Shipping[ :]*([-\s]*[\D]*\d*\.?\d*)/', $description, $shippingMatch);
-
                 // If a match for shipping was found, extract currency and value
                 if (isset($shippingMatch[1])) {
                     // Extract currency symbol from the shipping string
                     preg_match('/([^\d\s]+)/', $shippingMatch[1], $currencyMatch);
                     $currency = isset($currencyMatch[1]) ? trim($currencyMatch[1]) : '';
-
+                    if (strpos($shippingMatch[1], "\u{200F}") !== false) {
+                            // Remove the Right-to-Left Mark (RTLM) character
+                            $cleaned_text = str_replace("\u{200F}", "", $shippingMatch[1]);
+                            // Extract the number using a regular expression
+                            preg_match('/\d+(\.\d+)?/', $cleaned_text, $matches);
+                            $shippingAmount = $matches[0];
+                    }
+                    else
+                    {
                     // Set shipping value without currency
-                    $shippingAmount = floatval(preg_replace('/[^\d.]/', '', $shippingMatch[1]));
+                    $shippingAmount = preg_replace('/[^\d.]+|[\p{Cf}]/u', '', $shippingMatch[1]);
+                    }
                     // Format shipping amount to two decimal places
                     $shippingAmount = number_format($shippingAmount, 2, '.', '');
                 }
                 // Now use the extracted currency symbol to parse Est. Duty, GST/VAT, and Declaration
                 preg_match('/Est\. Duty:[ ]*([-\s]*[\D]*\d*\.?\d*)/', $description, $dutyMatch);
-
                 if (isset($dutyMatch[1])) {
-                    $estDutyAmount = floatval(preg_replace('/[^\d.]/', '', $dutyMatch[1]));
+                    if (strpos($dutyMatch[1], "\u{200F}") !== false)
+                    {
+                        $cleaned_text = str_replace("\u{200F}", "", $dutyMatch[1]);
+                        // Extract the number using a regular expression
+                        preg_match('/\d+(\.\d+)?/', $cleaned_text, $matches);
+                        $estDutyAmount = $matches[0];
+                    }
+                    else
+                    {
+                        $estDutyAmount = floatval(preg_replace('/[^\d.]/', '', $dutyMatch[1]));
+                    }
                     $estDutyAmount = number_format($estDutyAmount, 2, '.', '');
                 }
-
                 preg_match('/GST\/VAT:[ ]*([-\s]*[\D]*\d*\.?\d*)/', $description, $gstMatch);
                 if (isset($gstMatch[1])) {
-                    $generalSalesTaxAmount = floatval(preg_replace('/[^\d.]/', '', $gstMatch[1]));
+                    if (strpos($gstMatch[1], "\u{200F}") !== false)
+                    {
+                        $cleaned_text = str_replace("\u{200F}", "", $gstMatch[1]);
+                        // Extract the number using a regular expression
+                        preg_match('/\d+(\.\d+)?/', $cleaned_text, $matches);
+                        $generalSalesTaxAmount = $matches[0];
+                    }
+                    else
+                    {
+                        $generalSalesTaxAmount = floatval(preg_replace('/[^\d.]/', '', $gstMatch[1]));
+                    }
                     $generalSalesTaxAmount = number_format($generalSalesTaxAmount, 2, '.', '');
                 }
-
                 preg_match('/Declaration:[ ]*([-\s]*[\D]*\d*\.?\d*)/', $description, $declarationMatch);
                 if (isset($declarationMatch[1])) {
-                    $declarationAmount = floatval(preg_replace('/[^\d.]/', '', $declarationMatch[1]));
+                    if (strpos($declarationMatch[1], "\u{200F}") !== false)
+                    {
+                        $cleaned_text = str_replace("\u{200F}", "", $declarationMatch[1]);
+                        // Extract the number using a regular expression
+                        preg_match('/\d+(\.\d+)?/', $cleaned_text, $matches);
+                        $declarationAmount = $matches[0];
+                    }
+                    else
+                    {
+                        $declarationAmount = floatval(preg_replace('/[^\d.]/', '', $declarationMatch[1]));
+                    }
                     $declarationAmount = number_format($declarationAmount, 2, '.', '');
                 }
                 $TotalTax = $estDutyAmount + $generalSalesTaxAmount + $declarationAmount;

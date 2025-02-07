@@ -75,10 +75,6 @@ class ConfigSaveAfter implements ObserverInterface
                 $storeUrl = $this->storeManager->getStore()->getBaseUrl();
                 $data = json_encode(['action' => $status, 'sourceStoreName' => $storeUrl]);
 
-                // Optionally, send a request to an external service with status and store URL
-                // $url = 'http://localhost:35534/admin/settings/Magento/MagentoPluginActivateDeactivate.aspx';
-                // $this->curl->post($url, $data);
-
                 // Log the status based on the new value
                 $this->logger->info('Method Activate', ['action' => $status, 'sourceStoreName' => $storeUrl]);
             } else {
