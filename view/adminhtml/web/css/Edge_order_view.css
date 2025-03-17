@@ -1,0 +1,6 @@
+/* Hide the shipping price in the order view page */
+.admin__page-section-item.order-shipping-method span.price {
+    display: none !important;
+}
+
+/* Add any other custom styling here */

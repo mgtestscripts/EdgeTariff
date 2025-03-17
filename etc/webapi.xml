@@ -6,4 +6,10 @@
             <resource ref="Magento_Catalog::products"/>
         </resources>
     </route>
+    <route url="/V1/edgetariff/update-allow-domestic" method="POST">
+        <service class="EdgeTariff\EstDutyTax\Api\DeliveryManagementInterface" method="updateCustomCheckbox"/>
+        <resources>
+            <resource ref="Magento_Config::config"/>
+        </resources>
+    </route>
 </routes>

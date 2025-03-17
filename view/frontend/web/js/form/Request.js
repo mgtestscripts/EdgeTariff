@@ -80,7 +80,7 @@ define([
                                 if (response.status === 'success') {
                                     self.PostalFreeCountry = response.selected_countries;
                                 } else {
-                                    console.error('No countries found.');
+                                    console.log('No countries found.');
                                 }
                             },
                             error: function () {

@@ -57,11 +57,17 @@ class CheckMethod extends Action
             "carriers/{$carrierCode}/active",
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+        $isCheck = $this->scopeConfig->isSetFlag(
+            "carriers/{$carrierCode}/custom_checkbox",
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
 
         $result = $this->jsonFactory->create();
         return $result->setData([
             'carrier_code' => $carrierCode,
             'is_enabled' => $isEnabled ? true : false,
+            'carrier_Domestic' => $carrierCode,
+            'is_check' => $isCheck ? true : false,
         ]);
     }
 }

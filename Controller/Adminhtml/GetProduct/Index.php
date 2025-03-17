@@ -57,7 +57,6 @@ class Index extends Action
         // Get the product ID from the request
         $productId = $this->getRequest()->getParam('id');
         $product = $this->productRepository->getById($productId);
-
         // Initialize variables
         $hs6code = $product->getData('EdgeTariff_hs_code') ?? "";
         $countryOfOrigin = $product->getData('EdgeTariff_country_of_origin') ?? "";
@@ -82,6 +81,7 @@ class Index extends Action
         $productDetails = [
             'product_id' => $product->getId(),
             'product_name' => $product->getName(),
+            'sku' => $product->getsku(),
             'hs6code' => $hs6code,
             'country_of_origin' => $countryOfOrigin,
             'product_unit_price' => $productUnitPrice,

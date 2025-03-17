@@ -9,5 +9,6 @@
         <plugin name="custom_product_extension" type="EdgeTariff\EstDutyTax\Plugin\ProductRepositoryPlugin"/>
     </type>
     <preference for="EdgeTariff\EstDutyTax\Api\ProductHsCodeInterface" type="EdgeTariff\EstDutyTax\Model\ProductHsCode"/>
+    <preference for="EdgeTariff\EstDutyTax\Api\DeliveryManagementInterface" type="EdgeTariff\EstDutyTax\Model\DeliveryManagement" />
 
 </config>

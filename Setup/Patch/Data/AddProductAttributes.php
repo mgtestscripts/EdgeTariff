@@ -68,7 +68,6 @@ class AddProductAttributes implements DataPatchInterface
                 'visible' => true,
                 'is_html_allowed_on_frontend' => true,
                 'visible_on_front' => true,
-                'apply_to' => 'simple,configurable', // Only for Simple and Configurable products
             ]
         );
 
@@ -90,7 +89,6 @@ class AddProductAttributes implements DataPatchInterface
                 'visible_on_front' => false,
                 'used_in_product_listing' => true,
                 'frontend_class' => 'validate-digits',
-                'apply_to' => 'simple,configurable', // Only for Simple and Configurable products
             ]
         );
 

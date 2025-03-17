@@ -87,21 +87,32 @@ class OrderAddresses implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        $order = $observer->getOrder();
+        $shippingMethod = $order->getShippingMethod();
+        if($order->getIsVirtual() == 0) {
         // Replace 'customshipping' with your carrier code
         $carrierCode = 'EdgeTariffEstDutyTax';
         $isEnabled = $this->scopeConfig->isSetFlag(
             "carriers/{$carrierCode}/active",
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+        $ischeck = $this->scopeConfig->isSetFlag(
+            "carriers/{$carrierCode}/custom_checkbox",
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        
         if ($isEnabled == true) {
+            if($ischeck == false) {
+                if (strpos($shippingMethod, 'EdgeTariffEstDutyTax') !== false) {
             // Inside your observer method
             $quote = $observer->getQuote();
             $order = $observer->getOrder();
             $description = $order->getShippingDescription();
             
 
-            if (strpos($description, 'Delivery Date') !== false) {
-                $order->setShippingDescription($description . ", Shipping Fee = ");
+            if (strpos($description, 'Ship by') !== false) {
+                $order->setShippingDescription($description);
+                // $order->setShippingDescription($description . ", Shipping Fee = ");
             } else {
                 $shippingAmount = 0.0;
                 $estDutyAmount = 0.0;
@@ -146,17 +157,18 @@ class OrderAddresses implements ObserverInterface
                     }
                     $estDutyAmount = number_format($estDutyAmount, 2, '.', '');
                 }
-                preg_match('/GST\/VAT:[ ]*([-\s]*[\D]*\d*\.?\d*)/', $description, $gstMatch);
+                preg_match('/GST\/VAT:\s*([-\s]*[\D]*[\d,.]+)/', $description, $gstMatch);
                 if (isset($gstMatch[1])) {
                     if (strpos($gstMatch[1], "\u{200F}") !== false)
-                    {
+                    {   
                         $cleaned_text = str_replace("\u{200F}", "", $gstMatch[1]);
                         // Extract the number using a regular expression
                         preg_match('/\d+(\.\d+)?/', $cleaned_text, $matches);
                         $generalSalesTaxAmount = $matches[0];
                     }
                     else
-                    {
+                    {   
+                // dd($description,$gstMatch[1]);
                         $generalSalesTaxAmount = floatval(preg_replace('/[^\d.]/', '', $gstMatch[1]));
                     }
                     $generalSalesTaxAmount = number_format($generalSalesTaxAmount, 2, '.', '');
@@ -176,9 +188,10 @@ class OrderAddresses implements ObserverInterface
                     }
                     $declarationAmount = number_format($declarationAmount, 2, '.', '');
                 }
+                // dd($estDutyAmount,$shippingAmount,$generalSalesTaxAmount);
                 $TotalTax = $estDutyAmount + $generalSalesTaxAmount + $declarationAmount;
                 $TotalAmount = $shippingAmount + $TotalTax;
-
+                
                 // Update order with calculated amounts
                 $order->setShippingAmount($shippingAmount);
                 $order->setBaseShippingAmount($shippingAmount);
@@ -189,7 +202,7 @@ class OrderAddresses implements ObserverInterface
                 // Check if the specific phrase exists and replace it
                 $description = str_replace("any Duty & Tax will be payable by you separately", "any Duty & Tax will be payable by customer separately", $description);
                 $order->setShippingDescription($description);
-                $order->setShippingDescription($description . ", Shipping Fee = ");
+                // $order->setShippingDescription($description . ", Shipping Fee = ");
             }
 
             // Calculate and set the grand total
@@ -214,7 +227,7 @@ class OrderAddresses implements ObserverInterface
             $userID = $order->getCustomerId() ?? 0;
             $webshopUrl = $order->getStore()->getBaseUrl();
             $shopUrl = rtrim($webshopUrl, '/');
-
+            
             $data = [
                 'action' => 'OrderCompletion',
                 'user_id' => $userID,
@@ -277,7 +290,7 @@ class OrderAddresses implements ObserverInterface
                     }
                 }
             }
-
+            
             // Second pass: Process items and exclude tracked products
             $data['orderitems'] = [];
             foreach ($order->getAllVisibleItems() as $item) {
@@ -327,7 +340,7 @@ class OrderAddresses implements ObserverInterface
                     "/MagentoRestrictedPartyScreening/UpdateRPSOnOrder?shop={$siteUrl}";
                 $this->curl->post($apiUrl, $jsondata);
             }
-
+            
             /* --- Shipstation - START --- */
             $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
             $dimensionUnit = $this->scopeConfig->getValue(
@@ -407,7 +420,7 @@ class OrderAddresses implements ObserverInterface
                 $productPrice = $item->getPrice();
                 $productQuantity = $item->getQtyOrdered();
                 $productTotal = $item->getRowTotal();
-                $weight = number_format($item->getWeight(), 2);
+                $weight = number_format($item->getWeight() ?? 0, 2);
                 $dimensionUnit = 'lbs';
                 $productImage = $product->getImage();
 
@@ -582,9 +595,8 @@ class OrderAddresses implements ObserverInterface
             /* Get customs items - END */
             $jsondata = json_encode($shipdata);
             /* --- Shipstation - END --- */
-
             //$this->coreSession->unsCustomShippingRates();
-
+            
             foreach ($order->getAllVisibleItems() as $item) {
                 if ($item->getProductType() === 'bundle') {
                     $webUrl = $order->getStore()->getBaseUrl();
@@ -598,5 +610,12 @@ class OrderAddresses implements ObserverInterface
             }
             $this->session->clearStorage();
         }
+        else
+        {
+            $this->session->clearStorage();
+        }
     }
+    }
+    }
+}
 }
