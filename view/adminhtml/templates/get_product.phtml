@@ -17,7 +17,8 @@ $baseUrl = rtrim($escaper->escapeUrl($helper->getStoreBaseUrl()), '/');
 
 // Extract and escape product details
 $productId = $escaper->escapeHtmlAttr($productDetails['product_id']);
-$productName = $escaper->escapeUrl($productDetails['product_name']);
+// $productName = $escaper->escapeUrl($productDetails['product_name']);
+$productName = $productDetails['product_name'];
 $hs6Code = $escaper->escapeHtmlAttr($productDetails['hs6code']);
 $countryOfOrigin = $escaper->escapeHtmlAttr($productDetails['country_of_origin']);
 $productUnitPrice = $escaper->escapeHtmlAttr($productDetails['product_unit_price']);
@@ -25,14 +26,15 @@ $productUnitPrice = $escaper->escapeHtmlAttr($productDetails['product_unit_price
 // Escape and encode values
 // Escape the WTT_BASE_URL and base URL using the Escaper
 $wttUrl = $escaper->escapeUrl($helper->getWttBaseUrl());
-$encodedProductName = urlencode($productName);
+// $encodedProductName = urlencode($productName);
+$cleanName = html_entity_decode($productName);
 
 // Build the iframe src attribute
 $iframeSrc = $wttUrl . "/Magento/RPS.aspx?action=RequestPPC" .
     "&ProductId=" . $productId .
     "&code=0907a61c0c8d55e99db179b68161bc00" .
     "&SourceStoreName=" . $baseUrl .
-    "&product_name=" . $encodedProductName .
+    "&product_name=" . $cleanName .
     "&ProductUnitPrice=" . $productUnitPrice .
     "&Wttcounty=" . $countryOfOrigin .
     "&Wtths6code=" . $hs6Code;

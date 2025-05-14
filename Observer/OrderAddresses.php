@@ -206,7 +206,7 @@ class OrderAddresses implements ObserverInterface
             }
 
             // Calculate and set the grand total
-            $grandTotal = $order->getSubtotal() + $order->getShippingAmount() + $order->getTaxAmount();
+            $grandTotal = ($order->getSubtotal() + $order->getShippingAmount() + $order->getTaxAmount())+($order->getBaseDiscountAmount());
             $order->setGrandTotal($grandTotal);
             $order->setBaseGrandTotal($grandTotal);
 

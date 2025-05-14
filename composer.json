@@ -1,27 +1,11 @@
 {
     "name": "edgetariff/estdutytax",
-    "description": "EdgeTariff Estimate Duty & Taxies for magento 2 Extension",
+    "description": "Custom Shipping Method for Magento 2",
     "type": "magento2-module",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "require": {
         "php": "^7.4 || ^8.1",
         "magento/framework": "^103.0"
-    },
-    "authors": [
-        {
-            "name": "EdgeCTP",
-            "email": "support@morgangoodwin.com",
-            "homepage": "https://edgectp.com/"
-        },
-        {
-            "name": "MorganGoodwin Ltd"
-        }
-    ],
-    "license": [
-        "GPL-3.0-or-later"
-    ],
-    "support": {
-        "documentation": "https://edgetariff.com/wp-content/uploads/2024/12/EdgeTariff_Magento2_Extension_Tech_Guide.pdf"
     },
     "autoload": {
         "files": [
@@ -30,11 +14,5 @@
         "psr-4": {
             "EdgeTariff\\EstDutyTax\\": ""
         }
-    },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://github.com/mgtestscripts/EdgeTariff.git"
-        }
-    ]
+    }
 }

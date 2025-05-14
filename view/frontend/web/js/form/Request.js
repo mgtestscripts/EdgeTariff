@@ -36,6 +36,7 @@ define([
         initialize: function () {
             this._super();
             var self = this;
+
             this.shopUrl = url.build(''); // Builds the base URL (current store URL)
             var urlObject = new URL(this.shopUrl);
             this.shopName = urlObject.hostname.replace(/^www\./, '');
@@ -46,6 +47,7 @@ define([
                 success: function (response) {
                     self.CheckEnable = response;
                     if (response.is_enabled) {
+                        console.log('Shipping Method is Enabled:', response.carrier_code);
 
                         $(document).on('click', '.action-select-shipping-item', function () {
                             $('.checkout-shipping-method').hide();
@@ -60,8 +62,14 @@ define([
                         });
                         setTimeout(function () {
                             var availableRates = shippingService.getShippingRates();
-                            selectShippingMethod(availableRates()[0]);
+                            var selectedMethod = quote.shippingMethod();
+                        
+                            // Only auto-select if no method is selected
+                            if (!selectedMethod && availableRates().length > 0) {
+                                selectShippingMethod(availableRates()[0]);
+                            }
                         }, 2000);
+                        console.log('Current Selected Shipping Method:', quote.shippingMethod());                        
                         setTimeout(function () {
                             if (/^\d+$/.test(quote.getQuoteId())) {
                                 // Check if the class 'checkout-step-shipping_method' exists
@@ -152,6 +160,7 @@ define([
                             }
                         });
                     } else {
+                        console.log('Shipping Method is Disabled:', response.carrier_code);
                         $('.custom-button-class').hide();
                     }
                 },
@@ -164,6 +173,7 @@ define([
 
         checkShippingAddressFields: function () {
             if (this.CheckEnable.is_enabled) {
+                console.log('Shipping Method is Enabled:', this.CheckEnable.carrier_code);
 
                 var self = this;
                 $('.checkboxClass_Wtt_wrap_child').hide();
@@ -194,6 +204,7 @@ define([
                     }
                 }
             } else {
+                console.log('Shipping Method is Disabled:', this.CheckEnable.carrier_code);
                 $('.custom-button-class').hide();
             }
         },
@@ -446,12 +457,23 @@ define([
                                                     data: JSON.stringify(EstimateAddress),
                                                     success: function (response) {
                                                         if (response) {
+                                                            console.log(response);
                                                             if (response.length) {
                                                                 rateRegistry.set(shippingAddress.getKey(), response);
                                                                 shippingService.setShippingRates(response);
                                                                 var availableRates = shippingService.getShippingRates();
-                                                                selectShippingMethod(availableRates()[0]);
+                                                                // shipping method select 
+                                                                var firstMethod = availableRates()[0];
+                                                                if (firstMethod) {
+                                                                    selectShippingMethod(firstMethod);
+                                                                    
+                                                                    // Ensure frontend input checked 
+                                                                    setTimeout(function () {
+                                                                        $('.checkout-shipping-method input[type="radio"]').first().prop("checked", true).trigger("click");
+                                                                    }, 500);
+                                                                }
                                                                 shippingService.isLoading(false);
+                                                                console.log(quote.shippingMethod());
                                                                 location.reload();
 
                                                             } else {
@@ -477,12 +499,23 @@ define([
                                                     data: JSON.stringify(EstimateAddress),
                                                     success: function (response) {
                                                         if (response) {
+                                                            console.log(response);
                                                             if (response.length) {
                                                                 rateRegistry.set(shippingAddress.getKey(), response);
                                                                 shippingService.setShippingRates(response);
                                                                 var availableRates = shippingService.getShippingRates();
-                                                                selectShippingMethod(availableRates()[0]);
+                                                                // shipping method select
+                                                                var firstMethod = availableRates()[0];
+                                                                if (firstMethod) {
+                                                                    selectShippingMethod(firstMethod);
+                                                                    
+                                                                    // Ensure frontend input checked 
+                                                                    setTimeout(function () {
+                                                                        $('.checkout-shipping-method input[type="radio"]').first().prop("checked", true).trigger("click");
+                                                                    }, 500);
+                                                                }
                                                                 shippingService.isLoading(false);
+                                                                console.log(quote.shippingMethod());
                                                                 location.reload();
                                                             } else {
                                                                 shippingService.isLoading(false);

@@ -74,7 +74,7 @@ class ConfigSaveAfter implements ObserverInterface
                 // Get the store's base URL
                 $storeUrl = $this->storeManager->getStore()->getBaseUrl();
                 $data = json_encode(['action' => $status, 'sourceStoreName' => $storeUrl]);
-
+                
                 // Log the status based on the new value
                 $this->logger->info('Method Activate', ['action' => $status, 'sourceStoreName' => $storeUrl]);
             } else {
