@@ -17,12 +17,12 @@ class Data extends AbstractHelper
     /**
      * Base URL for WTT service
      */
-    public const WTT_BASE_URL = 'https://account.zugdev.com';
+    public const WTT_BASE_URL = 'https://account.edgectp.com';
 
     /**
      * Base URL for Swan service
      */
-    public const WTT_SWANBASE_URL = 'https://edgeswan.zugdev.com';
+    public const WTT_SWANBASE_URL = 'https://tarifftool.edgectp.com';
 
     /**
      * @var StoreManagerInterface
