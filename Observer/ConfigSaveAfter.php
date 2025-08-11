@@ -1,42 +1,44 @@
 <?php
+
+declare(strict_types=1);
+
 namespace EdgeTariff\EstDutyTax\Observer;
 
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Event\Observer;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\HTTP\Client\Curl;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+use Magento\Store\Model\ScopeInterface;
 
+/**
+ * Observer for config save after event.
+ */
 class ConfigSaveAfter implements ObserverInterface
 {
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private LoggerInterface $logger;
 
     /**
      * @var ScopeConfigInterface
      */
-    protected $scopeConfig;
+    private ScopeConfigInterface $scopeConfig;
 
     /**
      * @var StoreManagerInterface
      */
-    protected $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var Curl
      */
-    protected $curl;
+    private Curl $curl;
 
     /**
      * Constructor.
-     *
-     * @param LoggerInterface $logger
-     * @param ScopeConfigInterface $scopeConfig
-     * @param StoreManagerInterface $storeManager
-     * @param Curl $curl
      */
     public function __construct(
         LoggerInterface $logger,
@@ -51,38 +53,46 @@ class ConfigSaveAfter implements ObserverInterface
     }
 
     /**
-     * Execute observer method to handle configuration save events.
-     *
-     * This method checks if the configuration path 'carriers/EstDutyTax/active' has been changed,
-     * logs the status, and optionally sends a curl request with the new status and store URL.
+     * Execute observer.
      *
      * @param Observer $observer
      * @return void
      */
-    public function execute(Observer $observer)
+    public function execute(Observer $observer): void
     {
         try {
-            // Get event data
-            $eventData = $observer->getEvent()->getData();
-            $changedPaths = $eventData['changed_paths'] ?? [];
+            $changedPaths = $observer->getEvent()->getData('changed_paths') ?? [];
 
-            // Check if the specific path 'carriers/EstDutyTax/active' is in the changed paths
-            if (in_array('carriers/EstDutyTax/active', $changedPaths)) {
-                $newValue = $this->scopeConfig->getValue('carriers/EstDutyTax/active', ScopeInterface::SCOPE_STORE);
+            if (in_array('carriers/EstDutyTax/active', $changedPaths, true)) {
+                $newValue = $this->scopeConfig->getValue(
+                    'carriers/EstDutyTax/active',
+                    ScopeInterface::SCOPE_STORE
+                );
+
                 $status = $newValue ? 'install' : 'uninstall';
-
-                // Get the store's base URL
                 $storeUrl = $this->storeManager->getStore()->getBaseUrl();
-                $data = json_encode(['action' => $status, 'sourceStoreName' => $storeUrl]);
-                
-                // Log the status based on the new value
-                $this->logger->info('Method Activate', ['action' => $status, 'sourceStoreName' => $storeUrl]);
+
+                $data = json_encode([
+                    'action' => $status,
+                    'sourceStoreName' => $storeUrl
+                ]);
+
+                // Example external call (disabled)
+                // $url = 'https://example.com/plugin-activation-endpoint';
+                // $this->curl->post($url, $data);
+
+                $this->logger->info(
+                    'Magento Shipping Method Activation/Deactivation',
+                    ['action' => $status, 'sourceStoreName' => $storeUrl]
+                );
             } else {
-                $this->logger->info('The path carriers/EstDutyTax/active was not changed.');
+                $this->logger->info('Config path "carriers/EstDutyTax/active" was not changed.');
             }
-        } catch (\Exception $e) {
-            // Log any exceptions that occur during the execution
-            $this->logger->error('Error in ConfigSaveAfter observer: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            $this->logger->error(
+                'Error in ConfigSaveAfter observer: ' . $e->getMessage(),
+                ['trace' => $e->getTraceAsString()]
+            );
         }
     }
 }

@@ -96,54 +96,58 @@ class OrderAddresses implements ObserverInterface
         $shippingMethod = $order->getShippingMethod();
         $rates = $this->coreSession->getCustomShippingRates();
 
-        if (!preg_match('/EdgeTariffEstDutyTax_(\d+)/', $shippingMethod, $matches)) {
-            return;
-        }
-
-        $matchedIndex = (int)$matches[1] - 1;
-
-        if (!isset($rates['rates'][$matchedIndex])) {
-            return;
-        }
-
-        $matchedRate = $rates['rates'][$matchedIndex];
-
-        $noPackages = $matchedRate['noPackages'] ?? '';
-        $packingDimensions = $matchedRate['packingDimensions'] ?? '';
-        $packingRuleName = $matchedRate['packingRuleName'] ?? '';
-        $addressType = $matchedRate['addressType'] ?? '';
-
-        $noPackagesArray = $this->csvToArray($noPackages);
-        $packingDimensionsArray = $this->csvToArray($packingDimensions);
-        $packingRuleNameArray = $this->csvToArray($packingRuleName);
-
-        $noteCount = max(
-            count($noPackagesArray),
-            count($packingDimensionsArray),
-            count($packingRuleNameArray)
-        );
-
-        for ($i = 0; $i < $noteCount; $i++) {
-            if (empty($packingDimensionsArray[$i])) {
-                continue;
-            }
-
-            $noteDetails = __(
-                'No of Packages: %1<br>Packing Dimensions: %2<br>Packing Rule: %3<br>Address Type: %4',
-                $noPackagesArray[$i] ?? '-',
-                $packingDimensionsArray[$i] ?? '-',
-                $packingRuleNameArray[$i] ?? '-',
-                $addressType ?: '-'
-            );
-
-            $order->addStatusHistoryComment($noteDetails)
-                ->setIsCustomerNotified(false)
-                ->setIsVisibleOnFront(false);
-        }
-
-        $order->save();
-
         if ($order->getIsVirtual() == 0) {
+            // Order Notes -- START
+            if (!empty($shippingMethod && $rates)) {
+                if (!preg_match('/EdgeTariffEstDutyTax_(\d+)/', $shippingMethod, $matches)) {
+                    return;
+                }
+
+                $matchedIndex = (int)$matches[1] - 1;
+
+                if (!isset($rates['rates'][$matchedIndex])) {
+                    return;
+                }
+
+                $matchedRate = $rates['rates'][$matchedIndex];
+
+                $noPackages = $matchedRate['noPackages'] ?? '';
+                $packingDimensions = $matchedRate['packingDimensions'] ?? '';
+                $packingRuleName = $matchedRate['packingRuleName'] ?? '';
+                $addressType = $matchedRate['addressType'] ?? '';
+
+                $noPackagesArray = $this->csvToArray($noPackages);
+                $packingDimensionsArray = $this->csvToArray($packingDimensions);
+                $packingRuleNameArray = $this->csvToArray($packingRuleName);
+
+                $noteCount = max(
+                    count($noPackagesArray),
+                    count($packingDimensionsArray),
+                    count($packingRuleNameArray)
+                );
+
+                for ($i = 0; $i < $noteCount; $i++) {
+                    if (empty($packingDimensionsArray[$i])) {
+                        continue;
+                    }
+
+                    $noteDetails = __(
+                        'No of Packages: %1<br>Packing Dimensions: %2<br>Packing Rule: %3<br>Address Type: %4',
+                        $noPackagesArray[$i] ?? '-',
+                        $packingDimensionsArray[$i] ?? '-',
+                        $packingRuleNameArray[$i] ?? '-',
+                        $addressType ?: '-'
+                    );
+
+                    $order->addStatusHistoryComment($noteDetails)
+                        ->setIsCustomerNotified(false)
+                        ->setIsVisibleOnFront(false);
+                }
+
+                $order->save();
+            }
+            // Order Notes -- END
+            
             // Replace 'customshipping' with your carrier code
             $carrierCode = 'EdgeTariffEstDutyTax';
             $isEnabled = $this->scopeConfig->isSetFlag(

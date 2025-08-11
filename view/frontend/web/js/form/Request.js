@@ -37,6 +37,23 @@ define([
             this._super();
             var self = this;
 
+            // START --- hide old shipping methods if cart changed on checkout return
+            setTimeout(function () {
+                var currentCartKey = quote.getItems().map(function (item) {
+                    return item.item_id + ':' + item.qty;
+                }).join(',');
+            
+                var storedCartKey = window.sessionStorage.getItem('wtt_cart_key');
+            
+                if (storedCartKey && storedCartKey !== currentCartKey) {
+                    $('.checkout-shipping-method').hide();
+                    $('.checkboxClass_Wtt_wrap_child').show();
+                }
+            
+                window.sessionStorage.setItem('wtt_cart_key', currentCartKey);
+            }, 500);
+            // END --- hide old shipping methods if cart changed on checkout return
+
             this.shopUrl = url.build(''); // Builds the base URL (current store URL)
             var urlObject = new URL(this.shopUrl);
             this.shopName = urlObject.hostname.replace(/^www\./, '');
@@ -47,7 +64,6 @@ define([
                 success: function (response) {
                     self.CheckEnable = response;
                     if (response.is_enabled) {
-                        console.log('Shipping Method is Enabled:', response.carrier_code);
 
                         $(document).on('click', '.action-select-shipping-item', function () {
                             $('.checkout-shipping-method').hide();
@@ -69,7 +85,6 @@ define([
                                 selectShippingMethod(availableRates()[0]);
                             }
                         }, 2000);
-                        console.log('Current Selected Shipping Method:', quote.shippingMethod());                        
                         setTimeout(function () {
                             if (/^\d+$/.test(quote.getQuoteId())) {
                                 // Check if the class 'checkout-step-shipping_method' exists
@@ -160,7 +175,6 @@ define([
                             }
                         });
                     } else {
-                        console.log('Shipping Method is Disabled:', response.carrier_code);
                         $('.custom-button-class').hide();
                     }
                 },
@@ -173,7 +187,6 @@ define([
 
         checkShippingAddressFields: function () {
             if (this.CheckEnable.is_enabled) {
-                console.log('Shipping Method is Enabled:', this.CheckEnable.carrier_code);
 
                 var self = this;
                 $('.checkboxClass_Wtt_wrap_child').hide();
@@ -204,7 +217,6 @@ define([
                     }
                 }
             } else {
-                console.log('Shipping Method is Disabled:', this.CheckEnable.carrier_code);
                 $('.custom-button-class').hide();
             }
         },
@@ -232,20 +244,20 @@ define([
                 try {
                     const siteUrl = window.location.origin;
                     const userId = cartItems.quote_id; // Use quoteId from quote model
-                    const firstName = shippingAddress.firstname;
-                    const lastName = shippingAddress.lastname;
+                    const firstName = shippingAddress.firstname.trim();
+                    const lastName = shippingAddress.lastname.trim();
 
-                    let billingAddress = shippingAddress.street[0];
-                    let billingCity = shippingAddress.city;
-                    let billingState = shippingAddress.region;
+                    let billingAddress = shippingAddress.street[0].trim();
+                    let billingCity = shippingAddress.city.trim();
+                    let billingState = shippingAddress.region.trim();
                     let billingCountryCode = shippingAddress.countryId;
-                    let billingPostalCode = shippingAddress.postcode;
+                    let billingPostalCode = shippingAddress.postcode.trim();
 
-                    let shippingAddressLine = shippingAddress.street[0];
-                    let shippingCity = shippingAddress.city;
+                    let shippingAddressLine = shippingAddress.street[0].trim();
+                    let shippingCity = shippingAddress.city.trim();
                     let shippingState = shippingAddress.region;
                     let shippingCountryCode = shippingAddress.countryId;
-                    let shippingPostalCode = shippingAddress.postcode;
+                    let shippingPostalCode = shippingAddress.postcode.trim();
 
                     try {
                         const response = await $.ajax({
@@ -291,33 +303,33 @@ define([
                     let data = {
                         action: 'RequestEDT',
                         user_id: userId,
-                        user_name: shippingAddress.firstname + ' ' + shippingAddress.lastname,
-                        first_name: firstName,
-                        last_name: lastName,
+                        user_name: shippingAddress.firstname.trim() + ' ' + shippingAddress.lastname.trim(),
+                        first_name: firstName.trim(),
+                        last_name: lastName.trim(),
                         shopurl: siteUrl,
                         shopname: siteUrl.replace(/(http:\/\/|https:\/\/|www\.)/, ''),
                         currency: self.storeCurrency,
                         countrycode: self.CurrentCurrency,
                         shop_address: {
-                            address_line: self.ShopAddress.streetAddress,
-                            city: self.ShopAddress.city,
+                            address_line: self.ShopAddress.streetAddress.trim(),
+                            city: self.ShopAddress.city.trim(),
                             state: self.ShopAddress.stateId || 'N/A',
-                            country_code: self.ShopAddress.country,
-                            postal_code: self.ShopAddress.zipPostalCode
+                            country_code: self.ShopAddress.country.trim(),
+                            postal_code: self.ShopAddress.zipPostalCode.trim()
                         },
                         shop_billing_address: {
-                            address_line: shippingAddress.street[0],
-                            city: shippingCity,
-                            state: shippingState,
-                            country_code: shippingCountryCode,
-                            postal_code: shippingPostalCode
+                            address_line: shippingAddress.street[0].trim(),
+                            city: shippingCity.trim(),
+                            state: shippingState.trim(),
+                            country_code: shippingCountryCode.trim(),
+                            postal_code: shippingPostalCode.trim()
                         },
                         shop_shipping_address: {
-                            address_line: shippingAddress.street[0],
-                            city: shippingCity,
-                            state: shippingState,
-                            country_code: shippingCountryCode,
-                            postal_code: shippingPostalCode
+                            address_line: shippingAddress.street[0].trim(),
+                            city: shippingCity.trim(),
+                            state: shippingState.trim(),
+                            country_code: shippingCountryCode.trim(),
+                            postal_code: shippingPostalCode.trim()
                         },
                         orderitems: [],
                         Bundleorderitems: []
@@ -413,6 +425,11 @@ define([
                                 console.error('Error fetching configurable product info:', error);
                             }
                         } else {
+                            // Start -- Not Include Virtual & Downloadable Products
+                            if (product.product_type === "virtual" || product.product_type === "downloadable") {
+                                return;
+                            }
+                            // End -- Not Include Virtual & Downloadable Products
                             data.orderitems.push({
                                 product_id: product.product_id,
                                 variation_id: "0",
@@ -457,7 +474,6 @@ define([
                                                     data: JSON.stringify(EstimateAddress),
                                                     success: function (response) {
                                                         if (response) {
-                                                            console.log(response);
                                                             if (response.length) {
                                                                 rateRegistry.set(shippingAddress.getKey(), response);
                                                                 shippingService.setShippingRates(response);
@@ -473,7 +489,6 @@ define([
                                                                     }, 500);
                                                                 }
                                                                 shippingService.isLoading(false);
-                                                                console.log(quote.shippingMethod());
                                                                 location.reload();
 
                                                             } else {
@@ -499,7 +514,6 @@ define([
                                                     data: JSON.stringify(EstimateAddress),
                                                     success: function (response) {
                                                         if (response) {
-                                                            console.log(response);
                                                             if (response.length) {
                                                                 rateRegistry.set(shippingAddress.getKey(), response);
                                                                 shippingService.setShippingRates(response);
@@ -515,7 +529,6 @@ define([
                                                                     }, 500);
                                                                 }
                                                                 shippingService.isLoading(false);
-                                                                console.log(quote.shippingMethod());
                                                                 location.reload();
                                                             } else {
                                                                 shippingService.isLoading(false);
