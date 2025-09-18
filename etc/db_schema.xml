@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- Quote Address -->
+    <table name="quote_address" resource="checkout">
+        <column xsi:type="varchar" name="no_packages" nullable="true" length="255" comment="No Packages"/>
+        <column xsi:type="varchar" name="packing_rule_name" nullable="true" length="255" comment="Packing Rule Name"/>
+        <column xsi:type="varchar" name="packing_dimensions" nullable="true" length="255" comment="Packing Dimensions"/>
+        <column xsi:type="varchar" name="address_type_custom" nullable="true" length="255" comment="Custom Address Type"/>
+    </table>
+
+    <!-- Order Address -->
+    <table name="sales_order_address" resource="sales">
+        <column xsi:type="varchar" name="no_packages" nullable="true" length="255" comment="No Packages"/>
+        <column xsi:type="varchar" name="packing_rule_name" nullable="true" length="255" comment="Packing Rule Name"/>
+        <column xsi:type="varchar" name="packing_dimensions" nullable="true" length="255" comment="Packing Dimensions"/>
+        <column xsi:type="varchar" name="address_type_custom" nullable="true" length="255" comment="Custom Address Type"/>
+    </table>
+
+</schema>

@@ -3,9 +3,9 @@
     <extension_attributes for="Magento\Catalog\Api\Data\ProductInterface">
         <attribute code="store_currency" type="string" />
         <attribute code="weight_unit" type="string" />
-	<attribute code="variant_parent_id" type="int"/>
-	<attribute code="bundle_product_ids" type="string"/>
-<attribute code="main_product_ids" type="int"/>
-	<attribute code="product_type" type="string"/>
+        <attribute code="variant_parent_id" type="int"/>
+        <attribute code="bundle_product_ids" type="string"/>
+        <attribute code="main_product_ids" type="int"/>
+	    <attribute code="product_type" type="string"/>
     </extension_attributes>
 </config>
