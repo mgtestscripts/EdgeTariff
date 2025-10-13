@@ -29,7 +29,7 @@ class OrderAddresses implements ObserverInterface
     /**
      * @var SessionManagerInterface
      */
-    protected $session;
+    protected $coreSession;
 
     /**
      * @var StoreManagerInterface
@@ -51,40 +51,40 @@ class OrderAddresses implements ObserverInterface
      */
     protected $helper;
 
-    protected $coreSession;
+    /**
+     * @var CartRepositoryInterface
+     */
+    protected $quoteRepository;
 
     /**
      * Constructor.
      *
      * @param LoggerInterface $logger
      * @param Curl $curl
-     * @param SessionManagerInterface $session
+     * @param SessionManagerInterface $coreSession
      * @param StoreManagerInterface $storeManager
      * @param ScopeConfigInterface $scopeConfig
      * @param CheckoutSession $checkoutSession
      * @param Data $helper
-     * @param SessionManagerInterface  $coreSession
      * @param CartRepositoryInterface  $quoteRepository
      */
     public function __construct(
         LoggerInterface $logger,
         Curl $curl,
-        SessionManagerInterface $session,
+        SessionManagerInterface $coreSession,
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
         CheckoutSession $checkoutSession,
         Data $helper,
-        SessionManagerInterface $coreSession,
         CartRepositoryInterface $quoteRepository
     ) {
         $this->logger = $logger;
         $this->curl = $curl;
-        $this->session = $session;
+        $this->coreSession = $coreSession;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->checkoutSession = $checkoutSession;
         $this->helper = $helper;
-        $this->coreSession = $coreSession;
         $this->quoteRepository = $quoteRepository;
     }
 

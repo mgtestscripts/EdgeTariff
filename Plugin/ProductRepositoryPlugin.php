@@ -138,13 +138,24 @@ class ProductRepositoryPlugin
             }
         }
 
-        // For bundle products, calculate the total price and set bundle selections
+        /* --- For bundle products, handle price based on Dynamic Price setting - START --- */
+        $extensionAttributes = $product->getExtensionAttributes() ?: $this->productExtensionFactory->create();
+
         if ($product->getTypeId() === 'bundle') {
-            $totalPrice = $this->calculateTotalBundlePrice($product);
+            if ($product->getPriceType() == 0) { 
+                // Dynamic Price = Yes → calculate total price of child products
+                $totalPrice = $this->calculateTotalBundlePrice($product);
+                $extensionAttributes->setCalculatedPrice($totalPrice);
+            } else {
+                // Dynamic Price = No → use Magento's manual price
+                $extensionAttributes->setCalculatedPrice($product->getPrice());
+            }
+
+            // Add bundle selections info
             $extensionAttributes->setMainProductIds($this->getBundleSelections($product));
-            $product->setPrice($totalPrice);
         }
 
+        /* --- For bundle products, handle price based on Dynamic Price setting - END --- */
         $product->setExtensionAttributes($extensionAttributes);
     }
 
@@ -157,23 +168,20 @@ class ProductRepositoryPlugin
      */
     private function calculateTotalBundlePrice(ProductInterface $product)
     {
-        $connection = $this->resourceConnection->getConnection();
-        $tableName = $connection->getTableName('catalog_product_relation');
-        $childIds = $connection->fetchCol(
-            $connection->select()->from($tableName, ['child_id'])->where('parent_id = ?', $product->getId())
-        );
-
         $totalPrice = 0;
 
-        foreach ($childIds as $childId) {
-            $quantity = $connection->fetchOne(
-                $connection->select()->from('catalog_product_bundle_selection', ['selection_qty'])->where('product_id = ?', $childId)
-            );
-            if ($quantity !== false) {
-                $childPrice = $connection->fetchOne(
-                    $connection->select()->from('catalog_product_index_price', ['price'])->where('entity_id = ?', $childId)
-                );
-                $totalPrice += (float)$childPrice * (int)$quantity;
+        $typeInstance = $product->getTypeInstance();
+        $bundleOptions = $typeInstance->getOptionsCollection($product);
+        $bundleSelections = $typeInstance->getSelectionsCollection(
+            $bundleOptions->getAllIds(),
+            $product
+        );
+
+        foreach ($bundleSelections as $selection) {
+            if ($selection->getIsDefault()) {
+                $childPrice = (float)$selection->getPrice();
+                $quantity = (int)$selection->getSelectionQty();
+                $totalPrice += $childPrice * $quantity;
             }
         }
 
@@ -189,28 +197,18 @@ class ProductRepositoryPlugin
      */
     private function getBundleSelections(ProductInterface $product)
     {
-        $connection = $this->resourceConnection->getConnection();
-        $tableName = $connection->getTableName('catalog_product_relation');
-        $childIds = $connection->fetchCol(
-            $connection->select()->from($tableName, ['child_id'])->where('parent_id = ?', $product->getId())
-        );
-
         $bundleSelections = [];
-        foreach ($childIds as $childId) {
-            $quantity = $connection->fetchOne(
-                $connection->select()->from('catalog_product_bundle_selection', ['selection_qty'])->where('product_id = ?', $childId)
-            );
-            $price = $connection->fetchOne(
-                $connection->select()->from('catalog_product_index_price', ['price'])->where('entity_id = ?', $childId)
-            );
 
-            if ($quantity !== false && $price !== false) {
-                $bundleSelections[] = [
-                    'id' => (int)$childId,
-                    'quantity' => (int)$quantity,
-                    'price' => (float)$price,
-                ];
-            }
+        $typeInstance = $product->getTypeInstance();
+        $options = $typeInstance->getOptionsCollection($product);
+        $selections = $typeInstance->getSelectionsCollection($options->getAllIds(), $product);
+
+        foreach ($selections as $selection) {
+            $bundleSelections[] = [
+                'id'       => (int)$selection->getId(),
+                'quantity' => (int)$selection->getSelectionQty(),
+                'price'    => (float)$selection->getPrice(),
+            ];
         }
 
         return $bundleSelections;

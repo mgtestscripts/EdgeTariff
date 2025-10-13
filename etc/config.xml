@@ -12,8 +12,9 @@
                 <model>EdgeTariff\EstDutyTax\Model\Carrier\CustomShipping</model>
                 <!-- Payment Type Fixed -->
                 <name>EdgeTariff</name>
-                <title></title>
-                <specificerrmsg>Welcome</specificerrmsg>
+                <title>EdgeTariff</title>
+                <specificerrmsg>Rates is empty. Please check your settings.</specificerrmsg>
+                <enable_address_validation>0</enable_address_validation>
             </EdgeTariffEstDutyTax>
         </carriers>
     </default>

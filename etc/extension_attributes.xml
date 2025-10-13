@@ -7,5 +7,6 @@
         <attribute code="bundle_product_ids" type="string"/>
         <attribute code="main_product_ids" type="int"/>
 	    <attribute code="product_type" type="string"/>
+        <attribute code="calculated_price" type="float" />
     </extension_attributes>
 </config>
