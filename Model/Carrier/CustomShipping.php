@@ -178,6 +178,16 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         $items = $request->getAllItems();
         $result = $this->_rateResultFactory->create();
         $errorMsg = $this->getConfigData('specificerrmsg');
+        $storeInfo = $this->helper->getStoreInfo();
+        if ($request->getDestCountryId() == $storeInfo['country'] || $request->getDestRegionCode() == $storeInfo['stateId']) {
+            if (empty($request->getDestStreet()) && empty($request->getDestCity()) && (empty($postcode) || $postcode === '*')) {
+                return $result;
+            }
+        }else{
+            if (empty($request->getDestStreet()) && empty($request->getDestRegionCode()) && empty($request->getDestCity()) && (empty($postcode) || $postcode === '*')) {
+                return $result;
+            }
+        }
         if (empty($items)) {
             return false;
         }
@@ -197,11 +207,11 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         $requiredStateCountries = $requiredStateCountries ? explode(',', $requiredStateCountries) : [];
         $isStateRequired = in_array($countryId, $requiredStateCountries);
         if ($isStateRequired && empty($request->getDestRegionCode())) {
-                $error = $this->_rateErrorFactory->create();
-                $error->setCarrier($this->_code);
-                $error->setErrorMessage(__('Error: ET140 – The shipping address you entered appears to be incorrect. Please review and update your address to calculate shipping with estimated duties and taxes.') ?: $errorMsg);
-                $result->append($error);
-                return $result;
+            $error = $this->_rateErrorFactory->create();
+            $error->setCarrier($this->_code);
+            $error->setErrorMessage(__('Error: ET140 – The shipping address you entered appears to be incorrect. Please review and update your address to calculate shipping with estimated duties and taxes.') ?: $errorMsg);
+            $result->append($error);
+            return $result;
         }
         /* --- Error Message State/Province - END --- */
 
@@ -279,13 +289,20 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
             'carriers/EdgeTariffEstDutyTax/enable_address_validation',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+        $optionalZipCountries = $this->scopeConfig->getValue(
+            'general/country/optional_zip_countries',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        $optionalZipCountries = $optionalZipCountries ? explode(',', $optionalZipCountries) : [];
+        $isZipOptional = in_array($countryId, $optionalZipCountries);
+        if (!$isZipOptional && empty($request->getDestPostcode())) {
+            $error = $this->_rateErrorFactory->create();
+            $error->setCarrier($this->_code);
+            $error->setErrorMessage(__('Error: ET140 – The shipping address you entered appears to be incorrect. Please review and update your address to calculate shipping with estimated duties and taxes.') ?: $errorMsg);
+            $result->append($error);
+            return $result;
+        }
         if ($enableAddressValidation) {
-            $optionalZipCountries = $this->scopeConfig->getValue(
-                'general/country/optional_zip_countries',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            );
-            $optionalZipCountries = $optionalZipCountries ? explode(',', $optionalZipCountries) : [];
-            $isZipOptional = in_array($countryId, $optionalZipCountries);
             if (!$isZipOptional) {
                 /* --- Error Message AddressPostalValidate API - START --- */
                 $postData = [
@@ -359,7 +376,6 @@ class CustomShipping extends AbstractCarrier implements CarrierInterface
         );
         $countryData  = $this->helper->getCountryCode();
         $countryCode  = $countryData['country_code'];
-        $storeInfo = $this->helper->getStoreInfo();
         $addressLine = $storeInfo['streetAddress']; 
         $city = $storeInfo['city']; 
         $state = $storeInfo['stateId']; 
